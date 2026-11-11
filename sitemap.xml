@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://interfacerapi.com/</loc></url>
+  <url><loc>https://interfacerapi.com/about.html</loc></url>
+  <url><loc>https://interfacerapi.com/product.html</loc></url>
+  <url><loc>https://interfacerapi.com/pricing.html</loc></url>
+  <url><loc>https://interfacerapi.com/customers.html</loc></url>
+  <url><loc>https://interfacerapi.com/contact.html</loc></url>
+  <url><loc>https://interfacerapi.com/blog/index.html</loc></url>
+  <url><loc>https://interfacerapi.com/blog/why-token-refresh-is-the-silent-killer-of-integrat.html</loc></url>
+  <url><loc>https://interfacerapi.com/blog/retries-done-right-backoff-jitter-and-knowing-when.html</loc></url>
+  <url><loc>https://interfacerapi.com/blog/build-vs-buy-a-checklist-for-your-next-integration.html</loc></url>
+</urlset>
