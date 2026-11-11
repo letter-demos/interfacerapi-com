@@ -1,0 +1,26 @@
+# Interfacer API
+
+> One API for every API your product needs to talk to.
+
+Interfacer API is an integration platform for software teams. Instead of building and maintaining separate connections to hundreds of third-party services, developers call a single unified API. Interfacer handles OAuth and key management, automatic retries, rate-limit backoff, and webhook delivery, so product teams can ship integrations in days rather than quarters.
+
+## Product
+
+- [Product](https://interfacerapi.com/product.html): What Interfacer API makes and who it is for.
+
+## Pricing
+
+- [Pricing](https://interfacerapi.com/pricing.html): Plans and pricing for Interfacer API.
+
+## Guides
+
+- [Blog](https://interfacerapi.com/blog/index.html): Notes from the Interfacer API team.
+- [Why token refresh is the silent killer of integrations](https://interfacerapi.com/blog/why-token-refresh-is-the-silent-killer-of-integrat.html): Most broken integrations are not caused by API changes. They are caused by expired credentials nobody noticed.
+- [Retries done right: backoff, jitter, and knowing when to give up](https://interfacerapi.com/blog/retries-done-right-backoff-jitter-and-knowing-when.html): A practical guide to retrying third-party API calls without making an outage worse.
+- [Build vs. buy: a checklist for your next integration](https://interfacerapi.com/blog/build-vs-buy-a-checklist-for-your-next-integration.html): Five questions to ask before your team commits a quarter to building a one-off connector.
+
+## Company
+
+- [About Interfacer API](https://interfacerapi.com/about.html): The story and values behind Interfacer API.
+- [Customers](https://interfacerapi.com/customers.html): What customers say about Interfacer API.
+- [Contact](https://interfacerapi.com/contact.html): How to reach Interfacer API.
