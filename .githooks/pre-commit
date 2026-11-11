@@ -1,0 +1,7 @@
+#!/bin/sh
+# Rebuilds llms.txt from sitemap.xml and the pages before every commit.
+# Enable once per clone: git config core.hooksPath .githooks
+set -e
+root="$(git rev-parse --show-toplevel)"
+node "$root/scripts/generate-llms-txt.mjs" >/dev/null
+git add "$root/llms.txt"
