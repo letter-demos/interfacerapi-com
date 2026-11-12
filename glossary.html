@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interfacer API glossary: backoff, jitter, dead-letter queue</title>
+<meta name="description" content="Plain definitions of exponential backoff, jitter and dead-letter queues for teams integrating third-party APIs.">
+<link rel="canonical" href="https://interfacerapi.com/glossary.html">
+<link rel="stylesheet" href="style.css">
+  <script>(function(w,d){var h=null;try{var l=w.localStorage,p=JSON.parse(l.getItem("lv:vp:"+"lv_pub_dtso7jmkkuzqu9k14yezvp4y")||"[]"),q=(location.pathname||"/").replace(/\/{2,}/g,"/").replace(/(.)\/+$/,"$1");if(p.indexOf(q)>=0){w.__lvHeld=1;h=d.createElement("style");h.textContent="html{opacity:0!important}";d.head.appendChild(h)}}catch(e){}w.__lvReveal=function(){if(h&&h.parentNode)h.parentNode.removeChild(h);h=null};setTimeout(function(){if(h)w.__lvLate=1;w.__lvReveal()},300);var s=d.createElement("script");s.src="https://lettervisit.com/v.js?k=lv_pub_dtso7jmkkuzqu9k14yezvp4y";s.async=true;s.setAttribute("data-key","lv_pub_dtso7jmkkuzqu9k14yezvp4y");s.onerror=w.__lvReveal;d.head.appendChild(s)})(window,document)</script>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="index.html">Interfacer API</a><nav><a href="product.html">Product</a><a href="pricing.html">Pricing</a><a href="customers.html">Customers</a><a href="about.html">About</a><a href="blog/index.html">Blog</a><a href="contact.html">Contact</a></nav></div></header>
+<main><div class="wrap">
+<h1>Glossary</h1>
+<p class="lede">Three terms that come up whenever a third-party API call fails: how to retry it, how to spread retries out, and where an event goes when retrying stops helping.</p>
+<p class="meta"><a href="#exponential-backoff">Exponential backoff</a> · <a href="#jitter">Jitter</a> · <a href="#dead-letter-queue">Dead-letter queue</a></p>
+
+<h2 id="exponential-backoff">Exponential backoff</h2>
+<p>A retry strategy in which each attempt waits longer than the one before, typically doubling the delay, so a failing service gets more room to recover with every try.</p>
+<p>Not every failure deserves a retry. Timeouts, 429s and 503s usually do; a 400 or 404 almost never will, and retrying them just wastes quota. When a vendor sends a Retry-After header, follow it.</p>
+<p><strong>Why it matters:</strong> naive retries can turn a small upstream hiccup into an outage. Backing off keeps your integration from hammering a vendor that is already struggling, and keeps your own rate-limit quota for requests that can succeed. In Interfacer's Relay Webhooks, delivery uses exponential backoff retries for up to 72 hours.</p>
+<blockquote><p>“Exponential backoff spaces attempts further apart each time … A common pattern is to wait roughly one second, then two, then four.”</p></blockquote>
+<p class="meta">Source: <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right</a> and <a href="product.html">Product</a>. Supporting guide: <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right: backoff, jitter, and knowing when to give up</a></p>
+
+<h2 id="jitter">Jitter</h2>
+<p>Randomness added to each retry delay, so that clients which failed at the same moment do not all retry at the same moment. It works alongside exponential backoff rather than replacing it.</p>
+<p><strong>Why it matters:</strong> if a thousand clients all retry on the same schedule, a recovering vendor gets hit by the same spike again and again. Jitter spreads those retries out, which gives the vendor a real chance to recover and your requests a better chance of getting through.</p>
+<blockquote><p>“Jitter adds randomness so clients do not retry in lockstep … with up to half of each delay randomized.”</p></blockquote>
+<p class="meta">Source and supporting guide: <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right: backoff, jitter, and knowing when to give up</a></p>
+
+<h2 id="dead-letter-queue">Dead-letter queue</h2>
+<p>A holding queue for messages or events that could not be processed successfully. Instead of being retried forever or silently dropped, they are set aside so you can find out why they failed and send them again once the cause is fixed.</p>
+<p><strong>Why it matters:</strong> retries have to stop somewhere. A dead-letter queue means an event that exhausted its retries is still there to inspect, not lost, and you can redeliver it once the problem is resolved. In Interfacer's Relay Webhooks, the dead-letter queue comes with one-click redelivery.</p>
+<blockquote><p>“When retries are exhausted, the event lands in a dead-letter queue where you can inspect it and redeliver once the problem is resolved.”</p></blockquote>
+<p>Amazon's SQS documentation describes dead-letter queues as a target for messages that are not processed successfully, and notes they are useful for debugging because you can isolate those messages to determine why processing did not succeed.</p>
+<p class="meta">Sources: <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right</a>, <a href="product.html">Product</a> and <a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html">Using dead-letter queues in Amazon SQS</a>. Supporting guide: <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right: backoff, jitter, and knowing when to give up</a></p>
+</div></main>
+<footer><div class="wrap">© 2026 Interfacer API. One API for every API your product needs to talk to.</div></footer>
+</body>
+</html>

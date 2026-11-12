@@ -14,9 +14,9 @@
 <main><div class="wrap">
 <h1>Retries done right: backoff, jitter, and knowing when to give up</h1>
 <p>Retrying a failed request sounds simple, but naive retries can turn a small upstream hiccup into a full-blown outage. If a thousand clients all retry every second, the vendor's recovering servers get hammered again immediately.</p>
-<p>Exponential backoff spaces attempts further apart each time, and jitter adds randomness so clients do not retry in lockstep. A common pattern is to wait roughly one second, then two, then four, with up to half of each delay randomized.</p>
+<p><a href="../glossary.html#exponential-backoff">Exponential backoff</a> spaces attempts further apart each time, and <a href="../glossary.html#jitter">jitter</a> adds randomness so clients do not retry in lockstep. A common pattern is to wait roughly one second, then two, then four, with up to half of each delay randomized.</p>
 <p>Equally important is knowing which errors deserve a retry. Timeouts, 429s, and 503s usually do. A 400 or 404 almost never will, and retrying them just wastes quota. Respect Retry-After headers whenever a vendor sends them.</p>
-<p>Interfacer applies these rules per connector, since every vendor has its own rate-limit quirks. When retries are exhausted, the event lands in a dead-letter queue where you can inspect it and redeliver once the problem is resolved.</p>
+<p>Interfacer applies these rules per connector, since every vendor has its own rate-limit quirks. When retries are exhausted, the event lands in a <a href="../glossary.html#dead-letter-queue">dead-letter queue</a> where you can inspect it and redeliver once the problem is resolved.</p>
 <p class="meta"><a href="../blog/index.html">All posts</a></p>
 </div></main>
 <footer><div class="wrap">© 2026 Interfacer API. One API for every API your product needs to talk to.</div></footer>
