@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "goal": "seo",
+  "keyword_tracking": "letter",
+  "keyword_clusters": [
+    "unified API for CRM, accounting, HRIS, and ticketing integrations",
+    "build vs buy for SaaS product integrations",
+    "OAuth token expiry and refresh failures in integrations",
+    "gRPC vs REST vs WebSockets for API design",
+    "reliable webhook delivery with retries, backoff, and dead-letter queues"
+  ],
+  "strategies": [
+    "landing_pages"
+  ],
+  "decided_at": "2026-11-22T07:52:48.336Z",
+  "site": "interfacerapi.com"
+}
