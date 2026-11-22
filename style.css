@@ -19,3 +19,9 @@ h1{font-size:34px;line-height:1.2;margin:0 0 12px}h2{font-size:22px;margin:34px 
 blockquote{margin:0;color:var(--muted)}
 footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding:22px 0;background:#fff}
 .meta{color:var(--muted);font-size:14px}
+.compare-wrap{overflow-x:auto;margin-top:14px}
+.compare{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:8px;font-size:15px}
+.compare th,.compare td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}
+.compare thead th{font-size:16px}
+.compare tbody th{width:22%;font-weight:600}
+.compare tbody tr:last-child th,.compare tbody tr:last-child td{border-bottom:0}
