@@ -19,3 +19,4 @@ h1{font-size:34px;line-height:1.2;margin:0 0 12px}h2{font-size:22px;margin:34px 
 blockquote{margin:0;color:var(--muted)}
 footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding:22px 0;background:#fff}
 .meta{color:var(--muted);font-size:14px}
+footer nav{margin-top:6px}footer nav a{margin-left:0;font-size:14px}
