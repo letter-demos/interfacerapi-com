@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A guide to reliable webhook delivery with retries, backoff, and dead-letter queues</title>
+<meta name="description" content="How to deliver webhooks reliably: persist events first, retry only what deserves it, back off with jitter, set per-vendor rules, dead-letter what can't be delivered, and make every event replayable.">
+<link rel="canonical" href="https://interfacerapi.com/guide-to-reliable-webhook-delivery-with-retries-backoff">
+<link rel="stylesheet" href="style.css">
+  <script>(function(w,d){var h=null;try{var l=w.localStorage,p=JSON.parse(l.getItem("lv:vp:"+"lv_pub_dtso7jmkkuzqu9k14yezvp4y")||"[]"),q=(location.pathname||"/").replace(/\/{2,}/g,"/").replace(/(.)\/+$/,"$1");if(p.indexOf(q)>=0){w.__lvHeld=1;h=d.createElement("style");h.textContent="html{opacity:0!important}";d.head.appendChild(h)}}catch(e){}w.__lvReveal=function(){if(h&&h.parentNode)h.parentNode.removeChild(h);h=null};setTimeout(function(){if(h)w.__lvLate=1;w.__lvReveal()},300);var s=d.createElement("script");s.src="https://lettervisit.com/v.js?k=lv_pub_dtso7jmkkuzqu9k14yezvp4y";s.async=true;s.setAttribute("data-key","lv_pub_dtso7jmkkuzqu9k14yezvp4y");s.onerror=w.__lvReveal;d.head.appendChild(s)})(window,document)</script>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="index.html">Interfacer API</a><nav><a href="product.html">Product</a><a href="pricing.html">Pricing</a><a href="customers.html">Customers</a><a href="about.html">About</a><a href="blog/index.html">Blog</a><a href="contact.html">Contact</a></nav></div></header>
+<main><div class="wrap">
+<h1>A guide to reliable webhook delivery with retries, backoff, and dead-letter queues</h1>
+<p class="lede">Webhooks fail all the time: receivers deploy, vendors rate-limit, networks time out. Reliable delivery doesn't mean nothing fails. It means every event is stored, retried sensibly, set aside when it can't get through, and easy to replay once the problem is fixed.</p>
+<h2>Why webhook delivery breaks</h2>
+<p>A webhook is a promise that one system will tell another when something changes. That promise gets broken in a handful of predictable ways:</p>
+<ul><li>The receiving endpoint is down, mid-deploy, or returning errors for a few minutes.</li><li>The request times out because the receiver does slow work before responding.</li><li>An upstream vendor rate-limits you, or has an outage of its own.</li><li>Credentials behind the integration expired, so the event never gets fetched in the first place.</li><li>The vendor doesn't send webhooks at all, and changes have to be detected by polling.</li></ul>
+<p>None of these are exotic. If your design assumes the first attempt succeeds, you'll lose events quietly and find out from a customer.</p>
+<h2>Persist the event before you deliver it</h2>
+<p>Write every event to durable storage before the first delivery attempt, then deliver from that record. If the process crashes between "event happened" and "event sent", the event is still there to pick up. This outbox pattern is what makes retries, dead-lettering, and replay possible later.</p>
+<p>It also means you deliver at least once, not exactly once. Give every event a stable ID and ask consumers to treat it as an idempotency key, so a duplicate delivery is harmless.</p>
+<h2>Retry only what deserves a retry</h2>
+<p>Not every failure is temporary. Retrying a request that can never succeed just burns quota and delays the alert someone needs to see.</p>
+<div class="grid"><div class="card"><h3>Usually retry</h3><ul><li>Connection errors and timeouts</li><li>429 Too Many Requests</li><li>500, 502, 503, and 504</li></ul></div><div class="card"><h3>Usually don't</h3><ul><li>400 Bad Request</li><li>401 and 403, which point to a credential problem</li><li>404 and 410, where the target is gone</li></ul></div></div>
+<p>Treat auth failures as their own signal. A 401 is rarely fixed by waiting; it's fixed by refreshing a token or asking the customer to reconnect.</p>
+<h2>Back off exponentially, and add jitter</h2>
+<p>Exponential backoff waits longer after each failed attempt: about one second, then two, then four, and so on up to a cap. That gives a struggling receiver room to recover instead of hammering it at a fixed interval.</p>
+<p>Backoff alone isn't enough. If a thousand events fail at the same moment, they'll all retry at the same moment too. Jitter randomizes each delay so retries spread out. A common approach is "full jitter": pick a random wait between zero and the current backoff ceiling. Always cap the maximum delay, so a single event doesn't wait for days between attempts.</p>
+<h2>Give each vendor its own rules</h2>
+<p>One global retry policy fits nobody. Vendors differ in rate limits, timeouts, and how they signal that you should slow down. Set rules per vendor, or per endpoint:</p>
+<ul><li>Honor <code>Retry-After</code> headers whenever they're sent, even if your own schedule says otherwise.</li><li>Match timeouts to how the receiver actually behaves, not to a single default.</li><li>Track rate-limit budgets per connected account, so one noisy customer doesn't throttle everyone else.</li><li>Pause delivery to an endpoint that is failing consistently, rather than retrying each event into the same wall.</li></ul>
+<h2>Know when to give up: the dead-letter queue</h2>
+<p>Every retry policy needs an end. Decide up front how many attempts or how much elapsed time an event gets, and when it runs out, move it to a dead-letter queue instead of dropping it or retrying forever.</p>
+<p>A useful dead-letter queue keeps the full payload, every attempt with its status code and response, and the reason it gave up. It raises an alert when events land there, and it lets someone redeliver one event or a batch once the cause is fixed. A queue nobody looks at is just a slower way to lose data, so watch its depth like any other production metric.</p>
+<h2>Make replay a normal operation</h2>
+<p>Sooner or later a receiver will have a bug that accepted events and processed them wrongly. Being able to replay events by ID, by connection, or by time range turns that from a data-recovery project into a routine fix. Replay only works safely when consumers are idempotent, which is one more reason to send stable event IDs from day one.</p>
+<h2>Build observability in, not on</h2>
+<p>You can't fix delivery problems you can't see. Track these from the start rather than adding them after the first incident:</p>
+<ul><li>Delivery success rate per endpoint and per connected account</li><li>Attempts per event and time from event to successful delivery</li><li>Dead-letter queue depth and age of the oldest event</li><li>Searchable logs of every attempt, with request, response, and timing</li></ul>
+<p>When a customer asks "did you send it?", the answer should take seconds to find.</p>
+<h2>A checklist for reliable webhook delivery</h2>
+<ul><li>Events are persisted before the first delivery attempt</li><li>Every event has a stable ID consumers can use for idempotency</li><li>Only transient failures are retried</li><li>Retries use exponential backoff with jitter and a maximum delay</li><li>Retry rules can differ per vendor, and <code>Retry-After</code> is honored</li><li>There is a clear limit, after which events go to a dead-letter queue</li><li>Dead-lettered events trigger an alert and can be redelivered</li><li>Events can be replayed by ID or time range</li><li>Delivery metrics and attempt logs exist from day one</li></ul>
+<h2>Build it or use Interfacer</h2>
+<p>If event delivery is the product you sell, build this yourself and own every detail. If webhooks are plumbing between your product and dozens of third-party tools, it's a lot of infrastructure to maintain for every connector.</p>
+<p>Interfacer's Relay Webhooks retries failed deliveries with exponential backoff for up to 72 hours, applies retry rules per connector, signs payloads, and keeps replayable event logs. When retries run out, events land in a dead-letter queue with one-click redelivery. For APIs with no native webhooks, polling-based change detection turns changes into webhook events. Trace Console shows every request, retry, and error across your customers' connections.</p>
+<div class="card"><blockquote>“The replayable webhook logs alone paid for the Team plan. When an upstream vendor had an outage, we replayed a full afternoon of events without losing a single record.”</blockquote><p class="meta">Joanna Pike, Staff Engineer at Hirebridge Labs</p></div>
+<a class="btn" href="contact.html">Talk to us</a>
+<p class="meta">More: <a href="product.html">How Relay Webhooks works</a> · <a href="blog/retries-done-right-backoff-jitter-and-knowing-when.html">Retries done right: backoff, jitter, and knowing when to give up</a></p>
+</div></main>
+<footer><div class="wrap">© Interfacer API. One API for every API your product needs to talk to. <a href="guide-to-reliable-webhook-delivery-with-retries-backoff">Guide to reliable webhook delivery</a></div></footer>
+</body>
+</html>
