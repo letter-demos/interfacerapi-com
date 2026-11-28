@@ -18,4 +18,5 @@ h1{font-size:34px;line-height:1.2;margin:0 0 12px}h2{font-size:22px;margin:34px 
 .btn:hover{text-decoration:none;opacity:.92}
 blockquote{margin:0;color:var(--muted)}
 footer{border-top:1px solid var(--line);color:var(--muted);font-size:14px;padding:22px 0;background:#fff}
+footer .built{font-size:11px;margin:6px 0 0}
 .meta{color:var(--muted);font-size:14px}
